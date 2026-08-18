@@ -177,3 +177,41 @@ body {
 
     display: none;
 }
+
+/* NAVIGATION BAR */
+
+.navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 20px;
+    padding: 12px;
+
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.nav-button {
+    display: inline-block;
+
+    padding: 10px 22px;
+
+    color: black;
+    text-decoration: none;
+
+    font-size: 17px;
+    font-weight: bold;
+
+    border-radius: 8px;
+
+    transition: 0.3s;
+}
+
+.nav-button:hover {
+    background-color: white;
+
+    transform: translateY(-2px);
+}
