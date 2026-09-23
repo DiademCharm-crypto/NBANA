@@ -1,0 +1,35 @@
+// SECTION 4B of 5 -- paste SECOND, directly below 4A in the SAME tab
+private void refreshStorage85(final android.widget.TextView tv) {
+    try {
+        java.io.File dir = android.os.Environment.getExternalStorageDirectory();
+        android.os.StatFs st = new android.os.StatFs(dir.getPath());
+        long freeBytes = st.getAvailableBlocksLong() * st.getBlockSizeLong();
+        tv.setText("Internal storage  " + humanSize85(freeBytes) + " remaining");
+        tv.setTextColor(android.graphics.Color.parseColor("#9A9A9A"));
+    } catch (Exception e) {
+        tv.setText("");
+    }
+}
+private void renderDownloadsList85(final android.widget.LinearLayout list, final android.widget.TextView empty, final android.app.DownloadManager dm) {
+    list.removeAllViews();
+    float d = getResources().getDisplayMetrics().density;
+    android.database.Cursor c = dm.query(new android.app.DownloadManager.Query());
+    boolean any = false;
+    if (c != null) {
+        while (c.moveToNext() && list.getChildCount() < 30) {
+            any = true;
+            final long id = c.getLong(c.getColumnIndexOrThrow(android.app.DownloadManager.COLUMN_ID));
+            final int status = c.getInt(c.getColumnIndexOrThrow(android.app.DownloadManager.COLUMN_STATUS));
+            final long done = c.getLong(c.getColumnIndexOrThrow(android.app.DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+            final long total = c.getLong(c.getColumnIndexOrThrow(android.app.DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+            String[] meta = readDlMeta86(id);
+            String title = (meta[0] == null) ? "" : meta[0];
+            if (title.length() == 0) title = "Download";
+            final String poster = meta[1] == null ? "" : meta[1];
+            buildDownloadCard85(list, empty, dm, id, title, poster, status, done, total, d);
+        }
+        c.close();
+    }
+    empty.setVisibility(any ? android.view.View.GONE : android.view.View.VISIBLE);
+}
+// ========== END OF SECTION 4B -- last line after pasting 4B. Now paste 4C below. ==========

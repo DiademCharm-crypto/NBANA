@@ -1,0 +1,351 @@
+// ==========================================
+// DEYMFLIX - TV Series & Episodes Handler
+// (Filipino/English series. K-Drama series → kdrama-episode.js)
+ // ==========================================
+
+const seriesData = [
+  {
+    id: "Love-U-Lots",
+    title: "Love U Lots",
+    isFilipino: true,
+    poster: "https://media.themoviedb.org/t/p/w600_and_h900_face/qOjY3XE4C4prKGmFyJaPxANrhxI.jpg",
+    seasons: [
+      {
+        seasonNumber: 1,
+        episodes: [
+          {
+            episodeNumber: 1,
+            title: "Episode 1 - The Estranged Girl",
+            embedUrl: "https://deymflix-media.b-cdn.net/Love+U+Lots/Love.U.Lots.(2026).VONE.S01E01.1080p.WEB-DL.AAC2.0.x264-DarkRip.mkv"
+          },
+          {
+            episodeNumber: 2,
+            title: "Episode 2 - Meet the Others",
+            embedUrl: "https://deymflix-media.b-cdn.net/Love+U+Lots/Love.U.Lots.(2026).VONE.S01E02.1080p.WEB-DL.AAC2.0.x264-DarkRip.mkv"
+          },
+          {
+            episodeNumber: 3,
+            title: "Episode 3 - Paint Me Closer",
+            embedUrl: "https://deymflix-media.b-cdn.net/Love+U+Lots/Love.U.Lots.(2026).VONE.S01E03.1080p.WEB-DL.AAC2.0.x264-DarkRip.mkv"
+          },
+          {
+            episodeNumber: 4,
+            title: "Episode 4 - Can't Stay Away",
+            embedUrl: "https://deymflix-media.b-cdn.net/Love+U+Lots/Love.U.Lots.(2026).VONE.S01E04.1080p.WEB-DL.AAC2.0.x264-DarkRip.mkv"
+          },
+          {
+            episodeNumber: 5,
+            title: "Episode 5 - The Original One",
+            embedUrl: "https://deymflix-media.b-cdn.net/Love+U+Lots/Love.U.Lots.(2026).VONE.S01E05.1080p.WEB-DL.AAC2.0.x264-DarkRip.mkv"
+          },
+          {
+            episodeNumber: 6,
+            title: "Episode 6 - Clingy Past",
+            embedUrl: "https://deymflix-media.b-cdn.net/Love+U+Lots/Love.U.Lots.(2026).VONE.S01E06.1080p.WEB-DL.AAC2.0.x264-DarkRip.mkv"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "Crew-Girl",
+    title: "Crew Girl",
+    isFilipino: false,
+    poster: "https://media.themoviedb.org/t/p/w600_and_h900_face/tzf21i1ETZEu7i787ED3WThROH.jpg",
+    seasons: [
+      {
+        seasonNumber: 1,
+        episodes: [
+          {
+            episodeNumber: 1,
+            title: "Episode 1 - The Catch",
+            embedUrl: "https://deymflix-media.b-cdn.net/English+Series/Crew+Girl/Crew.Girl.S01e01.720P.Hevc.X265-Megusta%5BEztvx.To%5D.mp4"
+          },
+          {
+            episodeNumber: 2,
+            title: "Episode 2 - The Hateful Eight",
+            embedUrl: "https://deymflix-media.b-cdn.net/English+Series/Crew+Girl/Crew.Girl.S01e02.720P.Hevc.X265-Megusta%5BEztvx.To%5D.mp4"
+          },
+          {
+            episodeNumber: 3,
+            title: "Episode 3 - Flight Crew",
+            embedUrl: "https://deymflix-media.b-cdn.net/English+Series/Crew+Girl/Crew.Girl.S01e03.720P.Hevc.X265-Megusta%5BEztvx.To%5D.mp4"
+          },
+          {
+            episodeNumber: 4,
+            title: "Episode 4 - True Rowmance",
+            embedUrl: "https://deymflix-media.b-cdn.net/English+Series/Crew+Girl/Crew.Girl.S01e04.720P.Hevc.X265-Megusta%5BEztvx.To%5D.mp4"
+          },
+          {
+            episodeNumber: 5,
+            title: "Episode 5 - Anatomy of a Fall Formal",
+            embedUrl: "https://deymflix-media.b-cdn.net/English+Series/Crew+Girl/Crew.Girl.S01e05.720P.Hevc.X265-Megusta%5BEztvx.To%5D.mp4"
+          },
+          {
+            episodeNumber: 6,
+            title: "Episode 6 - Bad Break",
+            embedUrl: "https://deymflix-media.b-cdn.net/English+Series/Crew+Girl/Crew.Girl.S01e06.720P.Hevc.X265-Megusta%5BEztvx.To%5D.mp4"
+          },
+          {
+            episodeNumber: 7,
+            title: "Episode 7 - Under Pressure",
+            embedUrl: "https://deymflix-media.b-cdn.net/English+Series/Crew+Girl/Crew.Girl.S01e07.720P.Hevc.X265-Megusta%5BEztvx.To%5D.mp4"
+          },
+          {
+            episodeNumber: 8,
+            title: "Episode 8 - O Coxswain, My Coxswain",
+            embedUrl: "https://deymflix-media.b-cdn.net/English+Series/Crew+Girl/Crew.Girl.S01e08.720P.Hevc.X265-Megusta%5BEztvx.To%5D.mp4"
+          }
+        ]
+      }
+    ]
+  },
+  // NOTE: K-Drama series episodes live in kdrama-episode.js now.
+  // This file is for non-K-Drama series only (Filipino/English).
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSeriesEpisodes();
+});
+
+function initSeriesEpisodes() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const currentId = urlParams.get('id');
+
+  if (!currentId) return;
+
+  // Tolerant id match: URLs treat '+' as a space, so "The+Scandal" arrives as
+  // "The Scandal". Compare normalized forms so both spellings resolve.
+  const normId = v => String(v || '').toLowerCase().replace(/[\s\+]+/g, '-');
+  const currentSeries = seriesData.find(s => s.id === currentId || normId(s.id) === normId(currentId));
+  if (!currentSeries || !currentSeries.seasons || currentSeries.seasons.length === 0) return;
+
+  injectEpisodesUI(currentSeries);
+}
+
+function injectEpisodesUI(series) {
+  const descriptionElement = document.querySelector('.movie-description') || 
+                             document.querySelector('.video-info-box') || 
+                             document.querySelector('#movie-description-container');
+
+  if (!descriptionElement) return;
+  if (document.getElementById('episodes-container-section')) return;
+
+  const seriesSection = document.createElement('div');
+  seriesSection.className = 'episodes-container-section';
+  seriesSection.id = 'episodes-container-section';
+
+  const style = document.createElement('style');
+  style.textContent = `
+    .episodes-container-section {
+      margin-top: 18px;
+      margin-bottom: 20px;
+      padding: 14px;
+      background: #141414;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+    }
+    /* PC MODE: align with the 80% centered band above + dark red theme */
+    @media (min-width: 769px) {
+      .episodes-container-section {
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a0a0e 50%, #0a0a0a 100%);
+        border: 1px solid rgba(229, 9, 20, 0.25);
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      }
+    }
+    .episodes-header-flex {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .episodes-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .episodes-title-text {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .filipino-badge-chip {
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #e50914;
+      border: 1px solid rgba(229, 9, 20, 0.5);
+      background: rgba(229, 9, 20, 0.15);
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+    .season-select-dropdown {
+      background: #1f1f1f;
+      color: #ffffff;
+      border: 1px solid #333333;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+    }
+    .episodes-square-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .episode-square-btn {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .episode-square-btn:hover {
+      background: rgba(229, 9, 20, 0.2);
+      border-color: #e50914;
+      color: #ffffff;
+    }
+    .episode-square-btn.active {
+      background: #e50914;
+      border-color: #e50914;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(229, 9, 20, 0.5);
+    }
+  `;
+  document.head.appendChild(style);
+
+  let activeSeasonIndex = 0;
+  const filipinoTagHtml = series.isFilipino ? `<span class="filipino-badge-chip">Pinoy Series</span>` : '';
+
+  seriesSection.innerHTML = `
+    <div class="episodes-header-flex">
+      <div class="episodes-title-group">
+        <span class="episodes-title-text">Episodes</span>
+        ${filipinoTagHtml}
+      </div>
+      <select id="season-selector" class="season-select-dropdown">
+        ${series.seasons.map((s, idx) => `<option value="${idx}">Season ${s.seasonNumber}</option>`).join('')}
+      </select>
+    </div>
+    <div id="episodes-list" class="episodes-square-grid"></div>
+  `;
+
+  // Place the Episodes box BEFORE the Info/Cast tabs (inside the info box)
+  // so the order reads: title → synopsis → Episodes → Info/Cast.
+  const pcTabsEl = document.getElementById('pc-tabs');
+  if (pcTabsEl) {
+    pcTabsEl.insertAdjacentElement('beforebegin', seriesSection);
+  } else {
+    descriptionElement.insertAdjacentElement('afterend', seriesSection);
+  }
+
+  const seasonSelect = document.getElementById('season-selector');
+  seasonSelect.addEventListener('change', (e) => {
+    activeSeasonIndex = parseInt(e.target.value);
+    renderEpisodesGrid(series.seasons[activeSeasonIndex]);
+  });
+
+  renderEpisodesGrid(series.seasons[0]);
+}
+
+function renderEpisodesGrid(season) {
+  const episodesList = document.getElementById('episodes-list');
+  if (!episodesList || !season || !season.episodes) return;
+
+  episodesList.innerHTML = '';
+
+  season.episodes.forEach((ep, idx) => {
+    const btn = document.createElement('button');
+    btn.className = `episode-square-btn ${idx === 0 ? 'active' : ''}`;
+    btn.type = 'button';
+    btn.textContent = ep.episodeNumber || (idx + 1);
+    btn.title = ep.title || `Episode ${ep.episodeNumber || (idx + 1)}`;            btn.onclick = () => {
+            document.querySelectorAll('.episode-square-btn').forEach(el => el.classList.remove('active'));
+            btn.classList.add('active');
+            playEpisodeSource(ep, season);
+          };
+
+    episodesList.appendChild(btn);
+  });
+}
+
+function playEpisodeSource(episode, season) {
+  if (!episode || !episode.embedUrl) return;
+
+  // Reset subtitles so auto-load fires for the new episode
+  try {
+    const dp = document.getElementById('direct-video-player');
+    if (dp) { dp.querySelectorAll('track').forEach(t => t.remove()); }
+    if (typeof subtitleActive !== 'undefined') subtitleActive = false;
+    const offBtn = document.getElementById('btn-subtitle-off');
+    if (offBtn) offBtn.classList.remove('show');
+    const sBtn = document.getElementById('btn-settings');
+    if (sBtn) sBtn.classList.remove('subtitle-active-badge');
+  } catch(e) {}
+
+  if (typeof currentMovie !== 'undefined') {
+    currentMovie.manualEmbed = episode.embedUrl;
+    if (episode.hlsUrl) {
+      currentMovie._episodeHlsUrl = episode.hlsUrl;
+    } else {
+      delete currentMovie._episodeHlsUrl;
+    }
+    currentMovie.manualEmbed = episode.embedUrl;
+    currentMovie._episodeId = currentMovie.id + '-ep' + (episode.episodeNumber || '');
+    currentMovie._episodeTitle = currentMovie.title + ' - ' + (episode.title || 'Episode ' + episode.episodeNumber);
+    // Episode metadata for episode-aware subtitle search (OpenSubtitles)
+    currentMovie._episodeSeason = (season && season.seasonNumber) || 1;
+    currentMovie._episodeNum = episode.episodeNumber || 1;
+    currentMovie._episodeName = episode.title || '';
+    currentMovie._subtitleUrl = episode.subtitleUrl || '';
+  }
+
+  // Load a manually assigned subtitle file for this episode, if provided
+  // Usage: add  subtitleUrl: "https://.../S01E03.srt"  next to embedUrl in episodes.js
+  if (episode.subtitleUrl && typeof enableSubtitleTrack === 'function' && typeof srtToVtt === 'function') {
+    fetch(episode.subtitleUrl)
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then(srt => {
+        enableSubtitleTrack(srtToVtt(srt, 0), 'Episode Subtitle', 'en', srt);
+        if (typeof showToast === 'function') showToast('Subtitle loaded for Episode ' + (episode.episodeNumber || ''));
+      })
+      .catch(() => {
+        if (typeof showToast === 'function') showToast('Could not load the episode subtitle file.');
+      });
+  }
+
+  if (typeof loadEmbed === 'function') {
+    loadEmbed();
+  } else {
+    const directPlayer = document.getElementById('direct-video-player');
+    if (directPlayer) {
+      directPlayer.src = episode.embedUrl;
+      directPlayer.play().catch(() => {});
+    }
+  }
+
+  if (typeof showToast === 'function') {
+    showToast(`Loading Episode ${episode.episodeNumber || ''}...`);
+  }
+}

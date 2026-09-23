@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="74a509398cabeaaa6833cd7523c2c195c6e3aabd" content="74a509398cabeaaa6833cd7523c2c195c6e3aabd" />
+  <meta name="referrer" content="no-referrer-when-downgrade" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>DEYMFLIX - Category</title>
+
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <link rel="stylesheet" href="style.css?v=159.6">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="top-nav">
+    <!-- 1. LEFT: Brand Logo & Title -->
+    <a href="index.html" class="brand-logo-link">
+      <img src="favicon.svg" alt="DEYMFLIX Icon" class="brand-logo-img">
+      <span class="brand-title-text">DEYM<span class="highlight-red">FLIX</span></span>
+    </a>
+
+    <!-- 2. RIGHT: Request Button Removed - now only in bottom nav -->
+
+    <!-- 3. BOTTOM / CENTER: Search Bar -->
+      <div class="nav-spacer"></div>
+    <div class="search-overlay-bar">
+      <form id="search-form" onsubmit="event.preventDefault();">
+        <div class="search-input-wrapper">
+          <input type="search" id="search-input" placeholder="Search movies..." autocomplete="off" oninput="handleCategorySearch()">
+        </div>
+      </form>
+      <div id="search-suggestions-box" class="search-suggestions-box" style="display: none !important;"></div>
+    </div>
+  </header>
+
+  <!-- Category View Main Section -->
+  <main class="content-section category-main-wrapper">
+    <div class="section-header-flex">
+      <div class="section-header-left">
+        <h2 id="category-title" class="section-header-title">Loading Category...</h2>
+        <button id="btn-reel-history" class="reel-history-btn" onclick="openReelHistory()" style="display: none;">
+          <span>🕘</span> Watch History
+          <span id="reel-history-count" class="reel-history-count" style="display: none;"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Responsive Grid Container -->
+    <div class="category-grid" id="category-grid-container"></div>
+
+    <!-- Pagination Navigation Controls -->
+    <div class="pagination-wrapper" id="pagination-wrapper"></div>
+  </main>
+
+  <!-- REEL WATCH HISTORY MODAL -->
+  <div id="reel-history-modal" class="reel-history-modal" onclick="if (event.target === this) closeReelHistory()">
+    <div class="reel-history-card">
+      <div class="reel-history-header">
+        <h3>🕘 Continue Watching Reels</h3>
+        <button class="reel-history-close" onclick="closeReelHistory()" title="Close">&times;</button>
+      </div>
+      <div class="reel-history-list" id="reel-history-list"></div>
+    </div>
+  </div>
+
+  <!-- Request Modal -->
+  <div id="request-modal" class="request-modal-backdrop" style="display: none;">
+    <div class="request-modal-content">
+      <span class="close-modal-btn" onclick="closeRequestModal()">&times;</span>
+      <h3>Request a Movie</h3>
+      <p>Can't find what you're looking for? Let us know!</p>
+      <div class="request-input-group">
+        <input type="text" id="modal-request-input" placeholder="Enter movie title...">
+        <button onclick="submitMovieRequest()">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAVIGATION BAR -->
+  <nav class="bottom-nav">
+    <ul class="bottom-nav-items">
+      <li class="bottom-nav-item" data-page="home" onclick="window.location.href='index.html'">
+        <span class="bottom-nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></span>
+        <span class="bottom-nav-label">Home</span>
+      </li>
+      <li class="bottom-nav-item" data-page="reels" onclick="window.location.href='reels.html'">
+        <span class="bottom-nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg></span>
+        <span class="bottom-nav-label">Reels</span>
+      </li>
+      <li class="bottom-nav-item center-item active" data-page="explore" onclick="window.location.href='explore.html'">
+        <span class="bottom-nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
+        <span class="bottom-nav-label">Explore</span>
+      </li>
+      <li class="bottom-nav-item" data-page="history" onclick="window.location.href='history.html'">
+        <span class="bottom-nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span>
+        <span class="bottom-nav-label">History</span>
+      </li>
+      <li class="bottom-nav-item" data-page="request" onclick="openRequestModal()">
+        <span class="bottom-nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+        <span class="bottom-nav-label">Request</span>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Bookmarks Modal -->
+  <div class="mylist-modal-backdrop" id="mylist-modal">
+    <div class="mylist-modal">
+      <div class="mylist-modal-header">
+        <h3>🔖 My Saved List</h3>
+        <button class="mylist-close-btn" onclick="closeMyListModal()">&times;</button>
+      </div>
+      <div class="mylist-modal-body" id="mylist-modal-body"></div>
+    </div>
+  </div>
+
+  <div id="loading-toast" class="toast-notification">Loading...</div>
+
+  <script src="config.js?v=2.0"></script>
+  <script src="security.js?v=2.1"></script>
+  <script src="reels-data.js?v=151.0"></script>
+    <script src="filipino-movies.js?v=1.1"></script>
+    <script src="kdramas.js?v=1.0"></script>
+    <script src="episodes.js?v=1.5"></script>
+    <script src="kdrama-episode.js?v=1.0"></script>
+  <script src="app.js?v=160.2"></script>
+  <script>
+    let currentPage = 1;
+    const itemsPerPage = 18;
+    let currentCategoryType = 'all';
+    let allItemsList = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCategoryPage(1);
+    });
+
+    function loadCategoryPage(page) {
+      currentPage = page;
+      const urlParams = new URLSearchParams(window.location.search);
+      const categoryType = urlParams.get('type') || 'all';
+      currentCategoryType = categoryType;
+      const gridContainer = document.getElementById('category-grid-container');
+      const titleElement = document.getElementById('category-title');
+      const paginationWrapper = document.getElementById('pagination-wrapper');
+      const searchInput = document.getElementById('search-input');
+      const requestBtn = document.getElementById('header-request-btn');
+      const requestBtnNav = document.querySelector('.bottom-nav-item[data-page="request"]');
+
+      if (!gridContainer) return;
+      gridContainer.innerHTML = '';
+
+      let itemsList = [];
+
+      if (categoryType === 'reels') {
+        titleElement.textContent = 'AI Reels & Shorts';
+        gridContainer.classList.add('reels-grid-mode');
+        itemsList = typeof aiReelsData !== 'undefined' ? aiReelsData : [];
+        renderReelHistoryCount();
+        if (searchInput) searchInput.placeholder = 'Search reels...';
+        if (requestBtn) requestBtn.textContent = 'Request Reels';
+        if (requestBtnNav) {
+          requestBtnNav.onclick = () => openRequestModal('reels');
+        }
+      } else if (categoryType === 'tagalog') {
+        titleElement.textContent = 'Tagalog Movies PH';
+        itemsList = typeof movies !== 'undefined' ? movies.filter(m => m.isFilipino || m.genre?.includes('Filipino') || m.country === 'PH') : [];
+        const historyBtn = document.getElementById('btn-reel-history');
+        if (historyBtn) historyBtn.style.display = 'none';
+      } else if (categoryType === 'kdrama') {
+        titleElement.textContent = 'K-Drama';
+        itemsList = typeof movies !== 'undefined' ? movies.filter(m => m.isKdrama) : [];
+        const historyBtn = document.getElementById('btn-reel-history');
+        if (historyBtn) historyBtn.style.display = 'none';
+      } else {
+        titleElement.textContent = 'All Movies';
+        itemsList = typeof movies !== 'undefined' ? movies : [];
+        const historyBtn = document.getElementById('btn-reel-history');
+        if (historyBtn) historyBtn.style.display = 'none';
+      }
+      allItemsList = itemsList;
+
+      // Calculate total pages & slice array
+      const totalPages = Math.ceil(itemsList.length / itemsPerPage);
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const paginatedItems = itemsList.slice(startIndex, startIndex + itemsPerPage);
+
+      if (categoryType === 'reels') {
+        paginatedItems.forEach(reel => {
+          const card = document.createElement('div');
+          card.className = 'reel-thumb-card';
+          card.onclick = () => window.location.href = `reels.html?id=${encodeURIComponent(reel.id)}`;
+          card.innerHTML = `
+            <img src="${sanitizeHTML(reel.poster || reel.thumbnail)}" alt="${sanitizeHTML(reel.title)}" class="reel-thumb-img" loading="lazy">
+            <div class="reel-overlay-info">
+              <span class="reel-badge-tag">AI REEL</span>
+              <span class="reel-thumb-title">${sanitizeHTML(reel.title)}</span>
+            </div>
+          `;
+          gridContainer.appendChild(card);
+        });
+      } else {
+        paginatedItems.forEach(movie => {
+          if (typeof createMovieCard === 'function') {
+            gridContainer.appendChild(createMovieCard(movie));
+          }
+        });
+      }
+
+      renderPaginationControls(totalPages, paginationWrapper);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Re-bind hover/long-press previews to the freshly rendered cards
+      if (typeof HOVER_PREVIEW !== 'undefined' && HOVER_PREVIEW.refresh) HOVER_PREVIEW.refresh();
+    }
+
+    function handleCategorySearch() {
+      currentPage = 1;
+      const searchInput = document.getElementById('search-input');
+      const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+      const gridContainer = document.getElementById('category-grid-container');
+      const paginationWrapper = document.getElementById('pagination-wrapper');
+      if (!gridContainer) return;
+      gridContainer.innerHTML = '';
+
+      let filtered = allItemsList;
+      if (query.length > 0) {
+        if (currentCategoryType === 'reels') {
+          filtered = allItemsList.filter(r => r.title.toLowerCase().includes(query));
+        } else {
+          filtered = allItemsList.filter(m => m.title.toLowerCase().includes(query));
+        }
+      }
+
+      const totalPages = Math.ceil(filtered.length / itemsPerPage);
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const paginatedItems = filtered.slice(startIndex, startIndex + itemsPerPage);
+
+      if (currentCategoryType === 'reels') {
+        paginatedItems.forEach(reel => {
+          const card = document.createElement('div');
+          card.className = 'reel-thumb-card';
+          card.onclick = () => window.location.href = `reels.html?id=${encodeURIComponent(reel.id)}`;
+          card.innerHTML = `
+            <img src="${reel.poster || reel.thumbnail}" alt="${reel.title}" class="reel-thumb-img" loading="lazy">
+            <div class="reel-overlay-info">
+              <span class="reel-badge-tag">AI REEL</span>
+              <span class="reel-thumb-title">${sanitizeHTML(reel.title)}</span>
+            </div>
+          `;
+          gridContainer.appendChild(card);
+        });
+      } else {
+        paginatedItems.forEach(movie => {
+          if (typeof createMovieCard === 'function') {
+            gridContainer.appendChild(createMovieCard(movie));
+          }
+        });
+      }
+
+      renderPaginationControls(totalPages, paginationWrapper);
+      // Re-bind hover/long-press previews to the freshly rendered cards
+      if (typeof HOVER_PREVIEW !== 'undefined' && HOVER_PREVIEW.refresh) HOVER_PREVIEW.refresh();
+    }
+
+    // ── REEL WATCH HISTORY (AI Reels mode only) ──────────────────
+    function getReelHistory() {
+      try { return JSON.parse(localStorage.getItem('deymflix_reel_history') || '{}'); } catch (e) { return {}; }
+    }
+
+    function getUnfinishedReels() {
+      const history = getReelHistory();
+      const reelIds = new Set((typeof aiReelsData !== 'undefined' ? aiReelsData : []).map(r => r.id));
+      return Object.values(history)
+        .filter(h => h && reelIds.has(h.id) && h.progress < 95 && h.currentTime > 3)
+        .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+    }
+
+    function renderReelHistoryCount() {
+      const btn = document.getElementById('btn-reel-history');
+      const countEl = document.getElementById('reel-history-count');
+      if (!btn) return;
+      const unfinished = getUnfinishedReels();
+      btn.style.display = unfinished.length > 0 ? 'inline-flex' : 'none';
+      if (countEl) {
+        countEl.textContent = unfinished.length;
+        countEl.style.display = unfinished.length > 0 ? 'inline-flex' : 'none';
+      }
+    }
+
+    function openReelHistory() {
+      const modal = document.getElementById('reel-history-modal');
+      const list = document.getElementById('reel-history-list');
+      if (!modal || !list) return;
+
+      const unfinished = getUnfinishedReels();
+
+      if (unfinished.length === 0) {
+        list.innerHTML = '<div class="reel-history-empty">No watch history yet.<br>Watch a reel and it will show up here so you can continue where you left off.</div>';
+      } else {
+        list.innerHTML = '';
+        unfinished.forEach(item => {
+          const row = document.createElement('div');
+          row.className = 'reel-history-item';
+          row.innerHTML = `
+            <img src="${sanitizeHTML(item.poster)}" alt="${sanitizeHTML(item.title)}" class="reel-history-thumb" loading="lazy">
+            <div class="reel-history-info">
+              <div class="reel-history-title">${sanitizeHTML(item.title)}</div>
+              <div class="reel-history-progress-track"><div class="reel-history-progress-fill" style="width:${Math.max(2, Math.min(100, item.progress))}%"></div></div>
+              <div class="reel-history-pct">${Math.round(item.progress)}% watched</div>
+            </div>
+            <button class="reel-history-remove" title="Remove from history" onclick="removeReelHistory('${item.id.replace(/'/g, "\\'")}', event)">&times;</button>
+          `;
+          row.onclick = () => { window.location.href = 'reels.html?id=' + encodeURIComponent(item.id); };
+          list.appendChild(row);
+        });
+      }
+      modal.classList.add('open');
+    }
+
+    function closeReelHistory() {
+      const modal = document.getElementById('reel-history-modal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    function removeReelHistory(id, event) {
+      event.stopPropagation();
+      const history = getReelHistory();
+      delete history[id];
+      try { localStorage.setItem('deymflix_reel_history', JSON.stringify(history)); } catch (e) {}
+      renderReelHistoryCount();
+      openReelHistory();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeReelHistory();
+    });
+
+    function openRequestModal(type) {
+      const modal = document.getElementById('request-modal');
+      if (!modal) return;
+      const h3 = modal.querySelector('h3');
+      const input = document.getElementById('modal-request-input');
+      if (type === 'reels') {
+        if (h3) h3.textContent = 'Request Reels';
+        if (input) input.placeholder = 'Enter reel title...';
+      } else {
+        if (h3) h3.textContent = 'Request a Movie';
+        if (input) input.placeholder = 'Enter movie title...';
+      }
+      modal.style.display = 'flex';
+    }
+
+    function renderPaginationControls(totalPages, container) {
+      if (!container) return;
+      if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+      }
+
+      let paginationHTML = '';
+
+      // Prev Button
+      paginationHTML += `<button class="page-nav-btn ${currentPage === 1 ? 'disabled' : ''}" 
+        onclick="${currentPage > 1 ? `loadCategoryPage(${currentPage - 1})` : ''}">❮ Prev</button>`;
+
+      // Calculate Sliding Window for Maximum 3 Numeric Buttons
+      let startPage = Math.max(1, currentPage - 1);
+      let endPage = startPage + 2;
+
+      if (endPage > totalPages) {
+        endPage = totalPages;
+        startPage = Math.max(1, endPage - 2);
+      }
+
+      // First page shortcut
+      if (startPage > 1) {
+        paginationHTML += `<button class="page-num-btn" onclick="loadCategoryPage(1)">1</button>`;
+        if (startPage > 2) {
+          paginationHTML += `<span style="color:#666; font-weight:bold; padding: 0 4px;">...</span>`;
+        }
+      }
+
+      // Render 3 numeric buttons
+      for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `<button class="page-num-btn ${i === currentPage ? 'active' : ''}" 
+          onclick="loadCategoryPage(${i})">${i}</button>`;
+      }
+
+      // Last page shortcut
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          paginationHTML += `<span style="color:#666; font-weight:bold; padding: 0 4px;">...</span>`;
+        }
+        paginationHTML += `<button class="page-num-btn" onclick="loadCategoryPage(${totalPages})">${totalPages}</button>`;
+      }
+
+      // Next Button
+      paginationHTML += `<button class="page-nav-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+        onclick="${currentPage < totalPages ? `loadCategoryPage(${currentPage + 1})` : ''}">Next ❯</button>`;
+
+      container.innerHTML = paginationHTML;
+    }
+  </script>
+</body>
+</html>

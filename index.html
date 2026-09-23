@@ -1,69 +1,314 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Norberto Bana Sr. Mem. SDA Elementary School</title>
+  <meta name="74a509398cabeaaa6833cd7523c2c195c6e3aabd" content="74a509398cabeaaa6833cd7523c2c195c6e3aabd" />
+  <meta name="referrer" content="no-referrer-when-downgrade" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>DEYMFLIX - Home</title>
 
-    <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <link rel="stylesheet" href="style.css?v=159.8">
+
+  <!-- Firebase for online counter -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
-
 <body>
 
-    <!-- HEADER -->
+  <!-- Top Navigation Header -->
+  <header class="top-nav">
+    <!-- 1. LEFT: Logo + Title -->
+    <a href="index.html" class="brand-logo-link">
+      <img src="favicon.svg" alt="DEYMFLIX Icon" class="brand-logo-img">
+      <span class="brand-title-text">DEYM<span class="highlight-red">FLIX</span></span>
+    </a>
 
-    <div class="header">
-
-        <img src="logo.png" alt="School Logo">
-
-        <h1>Norberto Bana Sr. Mem. SDA Elementary School</h1>
-
+    <!-- 2. RIGHT: Online Badge (same row as logo on mobile, beside search on PC) -->
+    <div id="online-count-badge" class="online-count-badge">
+      <span class="online-dot"></span>
+      <span id="online-count-text">0 online</span>
     </div>
 
-
-    <!-- NAVIGATION -->
-
-    <nav class="navbar">
-
-        <a href="index.html" class="nav-button">
-            🏠 Home
-        </a>
-
-        <a href="about.html" class="nav-button">
-            ℹ About Us
-        </a>
-
-        <a href="https://www.facebook.com/norberto.bana.3" class="nav-button">
-            📘 Facebook
-        </a>
-
-    </nav>
-
-
-    <!-- HIGHLIGHTS OF THE MONTH -->
-
-    <section class="highlights">
-
-        <h2>Highlights of the Month</h2>
-
-        <div class="slideshow">
-
-            <img src="highlight1.jpg" class="slide" alt="School Highlight 1">
-
-            <img src="highlight2.jpg" class="slide" alt="School Highlight 2">
-
-            <img src="highlight3.jpg" class="slide" alt="School Highlight 3">
-
-            <img src="highlight4.jpg" class="slide" alt="School Highlight 4">
-
+    <!-- 3. SEARCH BAR: full width on mobile, inline on PC -->
+    <div class="search-overlay-bar">
+      <form id="search-form" onsubmit="event.preventDefault();">
+        <div class="search-input-wrapper">
+          <input type="search" id="search-input" placeholder="Search movies..." autocomplete="off">
         </div>
+      </form>
+      <div id="search-suggestions-box" class="search-suggestions-box" style="display: none;"></div>
+    </div>
+  </header>
 
+  <!-- Main Content Sections Wrapper -->
+  <div id="home-sections-wrapper">
+    <!-- Hero Billboard Wrapper for Carousel Track -->
+    <div id="hero-billboard-wrapper" class="hero-wrapper"></div>
+
+    <!-- Continue Watching Section -->
+    <section class="content-section" id="continue-watching-section" style="display: none;">
+      <div class="section-header-flex">
+        <h2 class="section-header-title">Continue Watching</h2>
+      </div>
+      <div class="horizontal-scroll" id="continue-watching-container"></div>
     </section>
 
+    <!-- 1. Recently Added Row -->
+    <section class="content-section">
+      <div class="section-header-flex">
+        <h2 class="section-header-title">Recently Added</h2>
+      </div>
+      <div class="top-picks-scroll" id="top-picks-container"></div>
+    </section>
 
-    <!-- JAVASCRIPT -->
+    <!-- 2. K-Drama Row -->
+    <section class="content-section">
+      <div class="section-header-flex">
+        <h2 class="section-header-title">K-Drama</h2>
+        <a href="category.html?type=kdrama" class="see-all-link">View All ❯</a>
+      </div>
+      <div class="horizontal-scroll" id="kdrama-container"></div>
+    </section>
 
-    <script src="script.js"></script>
+    <!-- 3. AI Reels Section -->
+    <section class="content-section">
+      <div class="section-header-flex">
+        <h2 class="section-header-title">AI Reels & Shorts</h2>
+        <a href="category.html?type=reels" class="see-all-link">View All ❯</a>
+      </div>
+      <div class="reels-horizontal-scroll" id="ai-reels-container"></div>
+    </section>
 
+    <!-- 4. Tagalog Movies Row -->
+    <section class="content-section">
+      <div class="section-header-flex">
+        <h2 class="section-header-title">Tagalog Movies PH</h2>
+        <a href="category.html?type=tagalog" class="see-all-link">View All ❯</a>
+      </div>
+      <div class="horizontal-scroll" id="filipino-movies-container"></div>
+    </section>
+
+    <!-- 4. All Movies Section -->
+    <section class="content-section">
+      <div class="section-header-flex">
+        <h2 id="grid-section-title" class="section-header-title">All Movies</h2>
+        <a href="category.html?type=all" class="see-all-link">View All ❯</a>
+      </div>
+      <div class="horizontal-scroll" id="all-movies-grid"></div>
+    </section>
+  </div>
+
+  <!-- Request Modal Dialog -->
+  <div id="request-modal" class="request-modal-backdrop" style="display: none;">
+    <div class="request-modal-content">
+      <span class="close-modal-btn" onclick="closeRequestModal()">&times;</span>
+      <h3>Request a Movie</h3>
+      <p>Can't find what you're looking for? Let us know!</p>
+      <div class="request-input-group">
+        <input type="text" id="modal-request-input" placeholder="Enter movie title...">
+        <button onclick="submitMovieRequest()">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SITE FOOTER -->
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div class="footer-brand">
+        <span class="footer-logo">DEYM<em>FLIX</em></span>
+        <p class="footer-tagline">Premium movies &amp; trailers — stream anywhere, anytime.</p>
+      </div>
+      <div class="footer-dev">
+        <button class="dev-info-btn" onclick="openDeveloperInfo()" title="Developer Info">
+          <img src="developer.png" alt="Developer photo" class="dev-avatar" loading="lazy">
+          <span class="dev-info-text">
+            <strong>Developer Info</strong>
+            <small>Tap to view</small>
+          </span>
+        </button>
+      </div>
+    </div>
+    <!-- App-mode: hidden via html.dfx-app (see app.js / style.css) -->
+    <div class="footer-app-dl">
+      <a class="app-dl-btn" href="app.html" title="Get the DEYMFLIX Android app">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24a11.46 11.46 0 0 0-8.94 0L5.65 5.67c-.19-.29-.58-.38-.87-.2-.28.18-.37.54-.22.83L6.4 9.48A10.78 10.78 0 0 0 1 18h22a10.78 10.78 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/></svg>
+        <span class="app-dl-text">
+          <strong>Get the Android App</strong>
+          <small>v1.3 · Free Download</small>
+        </span>
+      </a>
+    </div>
+    <div class="footer-legal">
+      <span>© 2026 DEYMFLIX. <strong>All Rights Reserved.</strong></span>
+    </div>
+  </footer>
+
+  <!-- DEVELOPER INFO MODAL -->
+  <div id="developer-modal" class="dev-modal" onclick="if (event.target === this) closeDeveloperInfo()">
+    <div class="dev-modal-card">
+      <button class="dev-modal-close" onclick="closeDeveloperInfo()" title="Close">&times;</button>
+      <img src="developer.png" alt="Diadem Charm Beronas" class="dev-modal-photo">
+      <h3 class="dev-modal-name">Diadem Charm Beronas</h3>
+      <p class="dev-modal-role">Web Developer · Designer</p>
+      <p class="dev-modal-country">📍 Philippines</p>
+      <p class="dev-modal-note">The mind behind DEYMFLIX — crafting clean, fast, and enjoyable streaming experiences for everyone.</p>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAVIGATION BAR -->
+  <nav class="bottom-nav">
+    <ul class="bottom-nav-items">
+      <li class="bottom-nav-item active" data-page="home">
+        <span class="bottom-nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></span>
+        <span class="bottom-nav-label">Home</span>
+      </li>
+      <li class="bottom-nav-item" data-page="reels" onclick="window.location.href='reels.html'">
+        <span class="bottom-nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg></span>
+        <span class="bottom-nav-label">Reels</span>
+      </li>
+      <li class="bottom-nav-item center-item" data-page="explore" onclick="window.location.href='explore.html'">
+        <span class="bottom-nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
+        <span class="bottom-nav-label">Explore</span>
+      </li>
+      <li class="bottom-nav-item" data-page="history" onclick="window.location.href='history.html'">
+        <span class="bottom-nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span>
+        <span class="bottom-nav-label">History</span>
+      </li>
+      <li class="bottom-nav-item" data-page="request" onclick="openRequestModal()">
+        <span class="bottom-nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg></span>
+        <span class="bottom-nav-label">Request</span>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Coming Soon Tooltip -->
+  <div class="coming-soon-tooltip" id="coming-soon-tooltip">🚧 Coming Soon!</div>
+
+  <!-- Bookmarks Modal -->
+  <div class="mylist-modal-backdrop" id="mylist-modal">
+    <div class="mylist-modal">
+      <div class="mylist-modal-header">
+        <h3>🔖 My Saved List</h3>
+        <button class="mylist-close-btn" onclick="closeMyListModal()">&times;</button>
+      </div>
+      <div class="mylist-modal-body" id="mylist-modal-body">
+        <!-- Content injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <div id="loading-toast" class="toast-notification">Loading...</div>
+
+  <script src="config.js?v=2.0"></script>
+  <script src="security.js?v=2.1"></script>
+  <script src="reels-data.js?v=151.2"></script>
+    <script src="filipino-movies.js?v=1.3"></script>
+    <script src="kdramas.js?v=1.0"></script>
+    <script src="episodes.js?v=1.5"></script>
+    <script src="kdrama-episode.js?v=1.0"></script>
+  <script src="app.js?v=160.2"></script>
+
+  <!-- Live Online Counter -->
+  <script>
+  (function() {
+    // Initialize Firebase for online tracking
+    const config = window.__DEYMFLIX_CONFIG__ && window.__DEYMFLIX_CONFIG__.FIREBASE_CONFIG;
+    if (!config) return;
+    
+    if (!firebase.apps.length) {
+      firebase.initializeApp(config);
+    }
+    const db = firebase.database();
+    const onlineRef = db.ref('online');
+    const myId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    const myRef = onlineRef.child(myId);
+
+    // Use SERVER time so a wrong device clock can never expire live users
+    let serverOffset = 0;
+    db.ref('.info/serverTimeOffset').on('value', function(s) { serverOffset = s.val() || 0; });
+    function serverNow() { return Date.now() + serverOffset; }
+
+    // Presence is refreshed on a heartbeat, so a visitor stays "online" for as
+    // long as their tab is open instead of expiring shortly after page load.
+    const HEARTBEAT_MS = 25000; // refresh presence every 25s
+    // Browsers throttle background tabs to roughly one timer per minute, so the
+    // tolerance must be comfortably above that or open tabs flicker offline.
+    const STALE_MS = 150000;    // only treat as offline after 2.5 min of silence
+    let beat = null;
+
+    function heartbeat() {
+      // Only refresh lastSeen. We deliberately do NOT remove on disconnect: a
+      // brief socket drop (backgrounded tab, phone locked, wifi blip) must not
+      // mark a visitor offline while their tab is still open. Anyone who really
+      // left is cleaned up by the stale sweep below.
+      myRef.set({ lastSeen: firebase.database.ServerValue.TIMESTAMP });
+    }
+    function startHeartbeat() {
+      if (beat) return;
+      heartbeat();
+      beat = setInterval(heartbeat, HEARTBEAT_MS);
+    }
+    function wakePresence() {
+      heartbeat();
+      startHeartbeat();
+    }
+
+    const connRef = db.ref('.info/connected');
+    connRef.on('value', function(snap) {
+      if (snap.val() === true) {
+        startHeartbeat();
+      } else if (beat) {
+        clearInterval(beat);
+        beat = null;
+      }
+    });
+
+    // Mobile browsers freeze timers in background tabs, so re-register whenever
+    // the tab returns to the foreground or the network comes back.
+    document.addEventListener('visibilitychange', function() { if (!document.hidden) wakePresence(); });
+    window.addEventListener('focus', wakePresence);
+    window.addEventListener('pageshow', wakePresence);
+    window.addEventListener('online', wakePresence);
+
+    // Listen for online count changes and update UI
+    onlineRef.on('value', function(snap) {
+      const count = snap.numChildren();
+      const badge = document.getElementById('online-count-badge');
+      const countText = document.getElementById('online-count-text');
+      if (badge) {
+        badge.style.display = count > 0 ? 'flex' : 'none';
+      }
+      if (countText) {
+        countText.textContent = count + ' online';
+      }
+    });
+
+    // Sweep users who stopped heartbeating (crashed tabs, closed browsers).
+    // We read the node and check each entry ourselves: orderByChild/endAt would
+    // also match entries that simply lack the ordered field, which would delete
+    // live users. Entries with no usable timestamp are leftovers from the old
+    // script and get cleared out too.
+    function sweep() {
+      onlineRef.once('value', function(snap) {
+        const cutoff = serverNow() - STALE_MS;
+        snap.forEach(function(child) {
+          const v = child.val() || {};
+          const stamp = typeof v.lastSeen === 'number' ? v.lastSeen
+                      : typeof v.joined === 'number' ? v.joined
+                      : null;
+          if (stamp === null || stamp < cutoff) {
+            child.ref.remove();
+          }
+        });
+      });
+    }
+    setInterval(sweep, 30000);
+  })();
+  </script>
 </body>
-
 </html>

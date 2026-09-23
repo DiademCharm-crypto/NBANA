@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>DEYMFLIX</title>
+<style>
+  html,body{margin:0;padding:0;background:#0B0B0F;height:100%;overflow:hidden;font-family:Roboto,Arial,sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+  #bar{position:fixed;top:0;left:0;right:0;height:52px;display:flex;align-items:center;padding:0 10px;background:rgba(11,11,15,.88);z-index:5}
+  #back{color:#E50914;font-size:26px;padding:4px 16px 6px 6px;cursor:pointer}
+  #ttl{color:#fff;font-size:15px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #vid{position:absolute;top:52px;left:0;width:100%;height:calc(100% - 52px);background:#000}
+  #msg{position:absolute;top:42%;left:0;right:0;text-align:center;color:#bbb;font-size:14px;padding:0 30px;display:none;z-index:4}
+</style>
+</head>
+<body>
+<div id="bar"><span id="back">&#10094;</span><span id="ttl">Now playing</span></div>
+<video id="vid" controls playsinline autoplay></video>
+<div id="msg"></div>
+<script>
+(function(){
+  var q = new URLSearchParams(location.search);
+  var f = q.get('f') || '';
+  var t = q.get('t');
+  if (t) document.getElementById('ttl').textContent = t;
+  var vid = document.getElementById('vid');
+  var msg = document.getElementById('msg');
+  function fail(m){ msg.textContent = m; msg.style.display = 'block'; }
+  if (!f) { fail('Nothing to play.'); return; }
+  vid.src = f;
+  var p = vid.play();
+  if (p && p.catch) { p.catch(function(){}); }
+  vid.addEventListener('error', function(){ fail('Cannot play this file. Try deleting the download and getting it again.'); });
+  document.getElementById('back').addEventListener('click', function(){
+    try { DeymflixLocal.exitPlayer(); } catch(e) { try { history.back(); } catch(e2) {} }
+  });
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+})();
+</script>
+</body>
+</html>
