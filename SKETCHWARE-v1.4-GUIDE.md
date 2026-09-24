@@ -1,13 +1,13 @@
-# DEYMFLIX App v1.4 — Sketchware Pro Upgrade Guide (v1.4e build — TRANSFER-PROOF)
+# DEYMFLIX App v1.4 — Sketchware Pro Upgrade Guide (**v1.4g** build — TRANSFER-PROOF)
 
 **Start from:** your existing project (608). Do NOT re-import — just re-paste the Java.
-**Estimated time:** ~10 minutes. No new libraries.
+**Estimated time:** ~15 minutes. No new libraries.
 
 > ## ⚠️ HOW TO MOVE THIS FILE TO YOUR PHONE (read first)
 >
 > Your compile errors were caused by the code traveling through **Telegram**:
 > the `||` operator triggers spoiler-formatting and gets eaten (chunks vanish),
-> and symbols get re-encoded into garbage. v1.4e is immune (100% ASCII, zero
+> and symbols get re-encoded into garbage. v1.4g is immune (100% ASCII, zero
 > pipes) — but the transfer path still matters:
 >
 > 1. Upload `DEYMFLIX-APP-v1.4.java` to your **GitHub repo** (same repo as the site)
@@ -24,34 +24,36 @@
 
 ---
 
-## What's new in v1.4b
+## What's new in v1.4g (this build)
 
 | Feature | How it works |
 |---|---|
-| **Animated splash** | Hexagon play logo (rotating + pulsing glow, like app.html) over the DEYMFLIX wordmark; fades out when the site finishes loading, 6s safety timeout |
-| **App-mode gate** | WebView UA gets ` DeymflixApp/1.4` → site shows ⬇ nav + Download button only inside the app |
-| **Themed confirm dialog** | Dark card + red Download button matching the site theme, shows title/quality/size |
-| **Private downloads** | Files save to the app's private storage (`Android/data/...`) — NOT the user's gallery; playable only inside DEYMFLIX |
-| **Real DownloadsActivity** | ⬇ nav INTENTs to your DownloadsActivity (full-screen page, no popup) with live progress, Cancel/Delete |
-| **Fullscreen fixed** | Landscape lock + hidden bars only — nothing covers the video (black-screen bug gone); back exits fullscreen first |
+| **No system notifications** | `VISIBILITY_HIDDEN` — nothing in the notification shade, no "Download complete" tap-to-open-raw-file leak. Progress lives on My Downloads |
+| **Anonymous DM rows** | DownloadManager title is just "DEYMFLIX" — nothing movie-related outside the app |
+| **Netflix rotation fix** | Only the **video element** fullscreen rotates the phone landscape now. Page fullscreen (trailers etc.) keeps portrait. The whole page never rotates anymore |
+| **Downloading / Downloaded tabs** | Netflix-style tabs on My Downloads: running/paused/pending under **Downloading**, finished under **Downloaded** |
+| **Posters on cards + no flicker** | Poster bitmaps are cached — the 1s refresh no longer re-downloads art (cards stay stable) |
+| **Subtitles download with the movie** | The app looks up `subtitles/manifest.json` (English first, then PHsub), saves `dfx_xxx.srt` next to `dfx_xxx.mp4`, and deletes it with the movie |
+| **Auto-fullscreen offline player** | Play starts landscape-locked and fullscreen immediately, 100% offline (file is already on disk). Clear toast if the file is missing |
+| **Player.html-style offline player** | local-player.html upgraded: auto-hiding controls, red seek bar + scrub, 10s skip, buffered bar, time code, CC button with the downloaded subtitle track |
+| **Request button moved** | In app mode the Request nav item is removed (6 items didn't fit) — a **Request a Movie** button sits at the very bottom of the footer on every page |
 
 ---
 
-## STEP 0 — Manifest (Manifest tab) — IMPORTANT for the rotation fix
+## STEP 0 — Manifest (Manifest tab) — already done on your side
 
-1. Add permission (Android 13+ notification):
+1. Permission (Android 13+):
 ```
 <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 ```
-2. On **MainActivity**, add this attribute (stops the black reload on rotate):
+2. On **MainActivity**:
 ```
 android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"
 ```
-(In Sketchware Pro: Manifest tab → find `<activity android:name=".MainActivity"` → add the attribute inside that tag.)
 
-WRITE_EXTERNAL_STORAGE is **no longer needed** — downloads are private now.
+WRITE_EXTERNAL_STORAGE is **not needed** — downloads are private.
 
-## STEP 1 — Paste the v1.4e Java
+## STEP 1 — Paste the v1.4g Java  (⚠️ v1.4f APKs must FULL RE-PASTE — bridge signatures changed)
 
 **MainActivity → Logic → ⋮ → Java/Kotlin Injection** — in each tab: **Select All → Delete → paste**:
 
@@ -65,39 +67,27 @@ WRITE_EXTERNAL_STORAGE is **no longer needed** — downloads are private now.
 
 | Section | File | Tab | Size |
 |---|---|---|---|
-| SECTION 4A | `SECTION-4A-paste.txt` | `onCreate` (FULL CLEAR first) | ~2.4 KB |
-| SECTION 4B | `SECTION-4B-paste.txt` | same tab, **directly below 4A** | ~2 KB |
+| SECTION 4A | `SECTION-4A-paste.txt` | `onCreate` (FULL CLEAR first) | ~4.9 KB |
+| SECTION 4B | `SECTION-4B-paste.txt` | same tab, **directly below 4A** | ~3.6 KB |
 | SECTION 4C | `SECTION-4C-paste.txt` | same tab, **directly below 4B** | ~4.3 KB |
-| SECTION 4D | `SECTION-4D-paste.txt` | same tab, **directly below 4C** | ~5.8 KB |
-| SECTION 4E | `SECTION-4E-paste.txt` | same tab, **directly below 4D** | ~1.5 KB |
+| SECTION 4D | `SECTION-4D-paste.txt` | same tab, **directly below 4C** | ~6.2 KB |
+| SECTION 4E | `SECTION-4E-paste.txt` | same tab, **directly below 4D** | ~2.5 KB |
 
 Paste **4A → 4B → 4C → 4D → 4E** in order, all in the same onCreate tab.
 Leave `downloads.xml` **empty** — the screen builds itself in code.
 
-The new card layout matches the Netflix-style reference: poster thumbnail on the left,
-title + status + thin red progress bar on the right, and Play / Cancel / Resume / Retry /
-Delete buttons under each card. The confirm dialog now also shows the movie's poster.
-Posters come from the site through the download bridge — upload the updated `app.js`
-(?v=160.2) and `player.html` to GitHub Pages together with these app changes.
+### STEP 1.5 — Offline player (LocalPlayerActivity) — RE-PASTE for this build
 
-### STEP 1.5 — Play button for downloaded movies (in-app player)
-
-Downloads get a red **Play** button (only on finished ones) that opens a native in-app
-player — playback never leaves DEYMFLIX (no VLC, no gallery). One-time setup:
-
-1. **Activity manager → Add Activity** → name it EXACTLY `LocalPlayerActivity`
-   (empty layout is fine — the code builds everything)
-2. **LocalPlayerActivity → Logic → ⋮ → Java/Kotlin Injection → onCreate**:
+1. **LocalPlayerActivity → Logic → ⋮ → Java/Kotlin Injection → onCreate**:
    Select All → Delete → paste **SECTION 6** from the master file
-   (also saved standalone as `.freebuff/section6.txt` — upload to GitHub RAW to copy)
-3. In Sketchware's **asset manager**, add `local-player.html` (in your Deymflix folder)
-   as an app asset — same place offline.html lives
-4. **DownloadsActivity**: full-clear the onCreate tab and paste the **new five-part
-   layout** — `SECTION-4A-paste.txt` through `SECTION-4E-paste.txt` in order (the old
-   two-part 4A/4B is replaced; the card design is now the Netflix-style thumbnail layout
-   and SECTION 4C contains the Play button + player launch code).
-
-Leave `downloads.xml` **empty** — the screen builds itself in code.
+   (also saved as `.freebuff/section6.txt` — upload to GitHub RAW to copy).
+   New in v1.4g: starts **landscape-locked** (auto-fullscreen like Netflix),
+   carries the downloaded subtitle to the player, and FLAG_SECURE is scoped to
+   this activity only.
+2. **Asset manager**: replace the old `local-player.html` asset with the updated
+   file (Netflix-style controls + subtitles). Same filename, so just replace it.
+3. If you have not created LocalPlayerActivity yet: **Activity manager → Add
+   Activity** → name it EXACTLY `LocalPlayerActivity` (empty layout is fine).
 
 **Clean-paste check:** each part must end with its `END OF SECTION 4x` marker
 (4A → 4B → 4C → 4D → 4E). If a marker is missing, that paste was truncated →
@@ -105,19 +95,31 @@ re-copy that section (from GitHub RAW, not a chat app).
 
 ⚠️ **Replace, don't append** — duplicate methods = compile errors.
 
-ℹ️ Note: SECTION 1 contains **one unmatched `}`** on purpose (it closes onCreate so the
-helpers live at class level). This is the exact pattern v1.3 used and it compiled — do
-not "fix" it. Sections 2, 3 and 4 are fully balanced.
+ℹ️ Note: SECTION 1 and SECTION 4A each contain **one unmatched `}`** on purpose
+(they close onCreate so the helpers live at class level). Same pattern as v1.3 —
+do not "fix" it. Sections 2, 3, 4B–4E are fully balanced.
+
+## STEP 1.9 — Upload the site files (GitHub Pages) — required for posters + nav fix
+
+Upload together:
+
+| File | Why |
+|---|---|
+| `app.js` (?v=160.3) | removes Request nav item, adds footer Request-a-Movie button, safe 2-arg fullscreen bridge, episode-aware download titles |
+| `player.html` | sends `isVideo` with the fullscreen call (video rotates, page doesn't) |
+| `style.css` (?v=160.3) | footer request button styles, app-mode padding |
+| all 7 HTML pages | ?v=160.3 references |
+| `local-player.html` | **also add/replace as an APP ASSET in Sketchware** (STEP 1.5) |
 
 ## STEP 2 — Build & install
 
 Build the APK in Sketchware Pro and install. Expected on launch:
 
-1. **Animated splash** — red hexagon spinning with pulsing glow + DEYMFLIX wordmark; fades when the site loads (max 6s)
-2. **Bottom nav** — 6 items ending with ⬇ Downloads; footer APK button **hidden**
-3. **Download flow** — movie → ⬇ beside bookmark → themed dark dialog with quality + size → notification progress
-4. **My Downloads** — full-screen page (your DownloadsActivity), live %, Cancel/Delete. Files are private to the app
-5. **Fullscreen** — tap fullscreen → landscape + bars hidden, **video visible** (no black screen); back exits fullscreen first
+1. **Bottom nav** — Request is gone, Downloads is there; footer shows the red **Request a Movie** button at the very bottom
+2. **Download flow** — movie → ⬇ → themed dialog with poster + size → **no notification in the shade**; watch progress on My Downloads instead
+3. **My Downloads** — **Downloading / Downloaded tabs** with poster cards; Play / Cancel / Resume / Retry / Delete per state
+4. **Play** — opens instantly in landscape fullscreen, offline; Netflix-style controls; CC shows the subtitle that downloaded with the movie
+5. **Fullscreen on player.html** — tapping fullscreen rotates **the video only**; the rest of the page stays portrait
 
 ---
 
@@ -125,18 +127,23 @@ Build the APK in Sketchware Pro and install. Expected on launch:
 
 | Symptom | Fix |
 |---|---|
-| Nav shows 5 items in the app | Site files not uploaded yet (app.js ?v=160.1) or one-time cache — pull to refresh once |
+| Nav still shows Request in the app | Old app.js cached — pull to refresh once; confirm `app.js?v=160.3` is on GitHub Pages |
+| No poster on cards | Old APK (pre-v1.4f) or app.js/player.html not uploaded — posters come from `window.__dfxCurrentMovie` in player.html |
+| "Cannot play (code N)" on Play | N is the DownloadManager error code (e.g. 1006 = no space, 1001 = network). Retry the download |
+| Subtitle missing in offline player | That title had no matching file in `subtitles/manifest.json` — regenerate the manifest after adding subs |
+| Page rotated landscape before | Old SECTION 1 — full-clear onCreate and re-paste v1.4g |
 | Splash hangs | It can't (6s timer). If seen, SECTION 1 paste is incomplete |
 | "This title cannot be downloaded." | iframe/HLS-only title — expected; direct MP4s download fine |
-| `confirmAndDownload ... not applicable for arguments (String, String, String, long)` | Old v1.4a/b block still in the DownloadListener — full-clear the onCreate tab and re-paste SECTION 1 |
-| `Duplicate method isAppFullscreen` | Old v1.4a/b block still present — full-clear the onCreate tab and re-paste SECTION 1 |
-| Black screen on rotate (still) | MainActivity `android:configChanges` attribute missing (STEP 0.2) |
+| `confirmAndDownload ... not applicable for arguments` | Old v1.4a/b block still in the DownloadListener — full-clear the onCreate tab and re-paste SECTION 1 |
 | Duplicate-method compile error | Old block not fully deleted — Select All first |
 
 ---
 
 ## File map
 
-- `DEYMFLIX-APP-v1.4.java` — 4 sections (3 MainActivity + 1 DownloadsActivity)
-- `downloads.html` — web fallback (bridge safety net)
-- `app.js` / `player.html` (website) — app-mode gate + download button + native fullscreen call
+- `DEYMFLIX-APP-v1.4.java` — v1.4g: SECTION 1–3 (MainActivity), 4A–4E (DownloadsActivity), 6 (LocalPlayerActivity)
+- `SECTION-4A-paste.txt` … `SECTION-4E-paste.txt` — phone paste files (regenerate: `node .freebuff/extract-4abcd.js`)
+- `.freebuff/verify-v14f.js` — structural checker (0 pipes, 0 non-ASCII, balances, dup methods)
+- `local-player.html` — in-app offline player (controls + subtitles) — also a Sketchware asset
+- `subtitles/manifest.json` — the subtitle index the app queries (regenerate: `node .freebuff/gen-sub-manifest.js`)
+- `app.js` / `player.html` / `style.css` (website) — app-mode nav, footer request button, 2-arg fullscreen bridge

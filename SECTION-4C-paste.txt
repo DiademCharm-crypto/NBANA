@@ -1,5 +1,5 @@
 // SECTION 4C of 5 -- paste THIRD, directly below 4B in the SAME tab
-private void buildDownloadCard85(final android.widget.LinearLayout list, final android.widget.TextView empty, final android.app.DownloadManager dm, final long id, final String title, final String poster, final int status, final long done, final long total, final float d) {
+private void buildDownloadCard85(final android.widget.LinearLayout list, final android.widget.TextView empty, final android.app.DownloadManager dm, final long id, final String title, final String poster, final String subName, final int status, final long done, final long total, final float d) {
     android.widget.LinearLayout card = new android.widget.LinearLayout(this);
     card.setOrientation(android.widget.LinearLayout.HORIZONTAL);
     card.setGravity(android.view.Gravity.CENTER_VERTICAL);
@@ -69,6 +69,6 @@ private void buildDownloadCard85(final android.widget.LinearLayout list, final a
     android.widget.LinearLayout.LayoutParams arp = new android.widget.LinearLayout.LayoutParams(-1, -2);
     arp.topMargin = (int)(10*d);
     right.addView(actRow, arp);
-    appendCardActions85(actRow, list, empty, dm, id, title, status, d);
+    appendCardActions85(actRow, list, empty, dm, id, title, subName, status, d);
 }
 // ========== END OF SECTION 4C -- last line after pasting 4C. Now paste 4D below. ==========

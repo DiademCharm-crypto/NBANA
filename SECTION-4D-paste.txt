@@ -1,5 +1,5 @@
 // SECTION 4D of 5 -- paste FOURTH, directly below 4C in the SAME tab
-private void appendCardActions85(final android.widget.LinearLayout actRow, final android.widget.LinearLayout list, final android.widget.TextView empty, final android.app.DownloadManager dm, final long id, final String title, final int status, final float d) {
+private void appendCardActions85(final android.widget.LinearLayout actRow, final android.widget.LinearLayout list, final android.widget.TextView empty, final android.app.DownloadManager dm, final long id, final String title, final String subName, final int status, final float d) {
     android.widget.LinearLayout.LayoutParams abp = new android.widget.LinearLayout.LayoutParams(-2, -2);
     abp.leftMargin = (int)(18*d);
     if (status == android.app.DownloadManager.STATUS_SUCCESSFUL) {
@@ -11,7 +11,7 @@ private void appendCardActions85(final android.widget.LinearLayout actRow, final
         play.setBackgroundDrawable(playBg85());
         play.setPadding((int)(22*d), 0, (int)(22*d), 0);
         play.setOnClickListener(new android.view.View.OnClickListener() {
-            @Override public void onClick(android.view.View v) { playDownload85(id, title); }
+            @Override public void onClick(android.view.View v) { playDownload85(id, title, subName); }
         });
         actRow.addView(play, abp);
     } else if (status == android.app.DownloadManager.STATUS_FAILED) {
@@ -74,6 +74,12 @@ private void appendCardActions85(final android.widget.LinearLayout actRow, final
                     String local = dm.getUriForDownloadedFile(id).toString();
                     new java.io.File(android.net.Uri.parse(local).getPath()).delete();
                 } catch (Exception e) { }
+                if (subName != null && subName.length() > 0) {
+                    try {
+                        java.io.File sdir = new java.io.File(getExternalFilesDir(android.os.Environment.DIRECTORY_MOVIES), "Deymflix");
+                        new java.io.File(sdir, subName).delete();
+                    } catch (Exception e2) { }
+                }
             }
             dm.remove(id);
             deleteDlMeta86(id);

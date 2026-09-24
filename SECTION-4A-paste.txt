@@ -18,13 +18,58 @@ final android.widget.TextView storage85 = new android.widget.TextView(this);
 storage85.setTextSize(13);
 storage85.setPadding(0, (int)(10*d85), 0, (int)(2*d85));
 root85.addView(storage85);
+final android.widget.LinearLayout tabs85 = new android.widget.LinearLayout(this);
+tabs85.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+android.widget.LinearLayout.LayoutParams tlp85 = new android.widget.LinearLayout.LayoutParams(-1, -2);
+tlp85.topMargin = (int)(12*d85);
+root85.addView(tabs85, tlp85);
+final android.widget.LinearLayout tabDl85 = new android.widget.LinearLayout(this);
+tabDl85.setOrientation(android.widget.LinearLayout.VERTICAL);
+final android.widget.TextView tabDlTxt85 = new android.widget.TextView(this);
+tabDlTxt85.setText("Downloading");
+tabDlTxt85.setTextSize(15);
+tabDlTxt85.setGravity(android.view.Gravity.CENTER);
+tabDlTxt85.setPadding(0, (int)(6*d85), 0, 0);
+tabDl85.addView(tabDlTxt85, new android.widget.LinearLayout.LayoutParams(-1, -2));
+final android.view.View tabDlLine85 = new android.view.View(this);
+android.widget.LinearLayout.LayoutParams dlp85 = new android.widget.LinearLayout.LayoutParams(-1, (int)(3*d85));
+dlp85.topMargin = (int)(8*d85);
+tabDl85.addView(tabDlLine85, dlp85);
+tabs85.addView(tabDl85, new android.widget.LinearLayout.LayoutParams(0, -2, 1f));
+final android.widget.LinearLayout tabDone85 = new android.widget.LinearLayout(this);
+tabDone85.setOrientation(android.widget.LinearLayout.VERTICAL);
+final android.widget.TextView tabDoneTxt85 = new android.widget.TextView(this);
+tabDoneTxt85.setText("Downloaded");
+tabDoneTxt85.setTextSize(15);
+tabDoneTxt85.setGravity(android.view.Gravity.CENTER);
+tabDoneTxt85.setPadding(0, (int)(6*d85), 0, 0);
+tabDone85.addView(tabDoneTxt85, new android.widget.LinearLayout.LayoutParams(-1, -2));
+final android.view.View tabDoneLine85 = new android.view.View(this);
+android.widget.LinearLayout.LayoutParams finp85 = new android.widget.LinearLayout.LayoutParams(-1, (int)(3*d85));
+finp85.topMargin = (int)(8*d85);
+tabDone85.addView(tabDoneLine85, finp85);
+tabs85.addView(tabDone85, new android.widget.LinearLayout.LayoutParams(0, -2, 1f));
+tabDl85.setOnClickListener(new android.view.View.OnClickListener() {
+    @Override public void onClick(android.view.View v) {
+        activeTab85 = 0;
+        styleDlTabs85(tabDlTxt85, tabDlLine85, tabDoneTxt85, tabDoneLine85);
+        renderDownloadsList85(list85, empty85, dm85);
+    }
+});
+tabDone85.setOnClickListener(new android.view.View.OnClickListener() {
+    @Override public void onClick(android.view.View v) {
+        activeTab85 = 1;
+        styleDlTabs85(tabDlTxt85, tabDlLine85, tabDoneTxt85, tabDoneLine85);
+        renderDownloadsList85(list85, empty85, dm85);
+    }
+});
+styleDlTabs85(tabDlTxt85, tabDlLine85, tabDoneTxt85, tabDoneLine85);
 final android.widget.LinearLayout list85 = new android.widget.LinearLayout(this);
 list85.setOrientation(android.widget.LinearLayout.VERTICAL);
 android.widget.LinearLayout.LayoutParams lp85 = new android.widget.LinearLayout.LayoutParams(-1, -2);
 lp85.topMargin = (int)(14*d85);
 root85.addView(list85, lp85);
 final android.widget.TextView empty85 = new android.widget.TextView(this);
-empty85.setText("No downloads yet.\nOpen any movie and tap the download button.");
 empty85.setTextColor(android.graphics.Color.parseColor("#8A8A8A"));
 empty85.setTextSize(14);
 empty85.setGravity(android.view.Gravity.CENTER);

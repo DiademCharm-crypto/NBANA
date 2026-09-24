@@ -1,12 +1,30 @@
 // SECTION 4E of 5 -- paste LAST, directly below 4D in the SAME tab
-private void playDownload85(final long id, final String title) {
+private void playDownload85(final long id, final String title, final String subName) {
     try {
         android.app.DownloadManager dm = (android.app.DownloadManager) getSystemService(android.content.Context.DOWNLOAD_SERVICE);
-        String local = dm.getUriForDownloadedFile(id).toString();
-        String path = android.net.Uri.parse(local).getPath();
+        android.database.Cursor c = dm.query(new android.app.DownloadManager.Query().setFilterById(id));
+        String path = "";
+        String reason = "";
+        if (c != null && c.moveToFirst()) {
+            int st = c.getInt(c.getColumnIndexOrThrow(android.app.DownloadManager.COLUMN_STATUS));
+            reason = c.getString(c.getColumnIndexOrThrow(android.app.DownloadManager.COLUMN_REASON));
+            if (st == android.app.DownloadManager.STATUS_SUCCESSFUL) {
+                android.net.Uri u = dm.getUriForDownloadedFile(id);
+                if (u != null) path = u.getPath();
+            }
+        }
+        if (c != null) c.close();
+        if (path == null) path = "";
+        if (path.length() == 0) {
+            String msg = "File is gone -- delete and download again.";
+            if (reason != null && reason.length() > 0) msg = "Cannot play (code " + reason + "). Try downloading again.";
+            android.widget.Toast.makeText(getApplicationContext(), msg, android.widget.Toast.LENGTH_LONG).show();
+            return;
+        }
         android.content.Intent it = new android.content.Intent(this, LocalPlayerActivity.class);
         it.putExtra("path", path);
         it.putExtra("title", title);
+        if (subName != null && subName.length() > 0) it.putExtra("sub", subName);
         startActivity(it);
     } catch (Exception e) {
         android.widget.Toast.makeText(getApplicationContext(), "Cannot open this download", android.widget.Toast.LENGTH_SHORT).show();
